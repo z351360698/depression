@@ -3,9 +3,9 @@ import torch.nn as nn
 import numpy as np
 import torch.nn.functional as F
 import math
-from .resnet import generate_model
-from .graph import normalize_digraph
-from .basic_block import *
+from resnet import generate_model
+from graph import normalize_digraph
+from basic_block import *
 
 
 class GNN(nn.Module):
@@ -103,21 +103,9 @@ class Head(nn.Module):
 
 
 class MEFARG(nn.Module):
-    def __init__(self, num_classes=12, backbone='swin_transformer_base', neighbor_num=4, metric='dots'):
+    def __init__(self, num_classes=12, backbone='resnet_base', neighbor_num=4, metric='dots'):
         super(MEFARG, self).__init__()
-        if 'transformer' in backbone:
-            # TODO: video swin-transformer
-            if backbone == 'swin_transformer_tiny':
-                self.backbone = swin_transformer_tiny()
-            elif backbone == 'swin_transformer_small':
-                self.backbone = swin_transformer_small()
-            else:
-                self.backbone = swin_transformer_base()
-            self.in_channels = self.backbone.num_features
-            self.out_channels = self.in_channels // 2
-            self.backbone.head = None
-
-        elif 'resnet' in backbone:
+        if 'resnet' in backbone:
             # TODO: the parameter of generate_model
             if backbone == 'resnet18':
                 self.backbone = generate_model(18)
@@ -141,3 +129,9 @@ class MEFARG(nn.Module):
         cl = self.head(x)
         return cl
 
+if __name__ == '__main__':
+    net = MEFARG();
+    shape = (1, 3, 16, 112, 112,);
+    x = torch.rand(shape)
+    y = net(x)
+    print(y.shape)

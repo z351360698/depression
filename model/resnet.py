@@ -205,10 +205,8 @@ class ResNet(nn.Module):
         x = self.layer3(x)
         x = self.layer4(x)
 
-        x = self.avgpool(x)
 
-        x = x.view(x.size(0), -1)
-        x = self.fc(x)
+        x = x.view(x.size(0), x.size(1), -1).permute(0, 2, 1)
 
         return x
 
